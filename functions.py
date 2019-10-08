@@ -6,7 +6,7 @@ from datetime import datetime
 
 def user(user_details):
     conn = MongoClient(conf['mongo_url'])
-    uname = user_details['UID']
+    uname = user_details['userId']
     user_details['_id'] = uname
     db=conn.Books
     collection=db.myapp_user
@@ -18,7 +18,7 @@ def display_userdetails(user_id):
     conn = MongoClient(conf['mongo_url'])
     db=conn.Books
     collection=db.myapp_user
-    get=collection.find_one({'UID' : user_id}, {'_id' : False})
+    get=collection.find_one({'userId' : user_id}, {'_id' : False})
     mydict=dumps(get)
     conn.close()
     return mydict
@@ -28,7 +28,7 @@ def del_user(user_id):
 	conn=MongoClient(conf['mongo_url'])
 	db=conn.Books
 	collection=db.myapp_user
-	collection.delete_one({'UID':user_id})
+	collection.delete_one({'userId':user_id})
 	return json.dumps({"Success" : "User has been deleted"})
 
 
@@ -36,7 +36,7 @@ def update_userdetails(user_id, user_details):
     conn=MongoClient(conf['mongo_url'])
     db=conn.Books
     collection=db.myapp_user
-    collection.update_one({"UID": user_id},
+    collection.update_one({"userId": user_id},
                                  {"$set" : user_details})
     return json.dumps({"Success" : "Details updated"})
 
