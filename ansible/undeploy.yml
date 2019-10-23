@@ -1,0 +1,20 @@
+---
+
+- name: Undeploy Playbook
+  hosts: all
+  tasks:
+
+  - name: Getting running python server process id
+    shell: ps aux | grep [a]pis.py | awk '{ print $2 }'
+    register: items
+
+  - name: Stopping the python server
+    become: yes
+    shell: "kill {{ item }}"
+    with_items: "{{ items.stdout_lines }}"
+
+  - name: Delete existing content dir from host
+    become: yes
+    file:
+      path: /opt/esp
+      state: absent

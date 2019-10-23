@@ -65,6 +65,23 @@ def display_book(book_id):
 	mydict=dumps(get)
 	return mydict
 
+def display_all_books():
+	conn=MongoClient(conf['mongo_url'])
+	db=conn.Books
+	coll=db.library_books
+	get=coll.find({}, {'_id':False})
+	mydict=dumps(get)
+	return mydict
+
+
+def display_book_onparams(dict):
+	conn=MongoClient(conf['mongo_url'])
+	db=conn.Books
+	coll=db.library_books
+	get=coll.find(dict, {'_id' : False})
+	mydict=dumps(get)
+	return mydict
+
 def book_action_taken(user_id, book_id, action_taken):
 	conn=MongoClient(conf['mongo_url'])
 	db=conn.Books
@@ -79,7 +96,15 @@ def book_action_taken(user_id, book_id, action_taken):
 		"Status" : "Pending", 
 		"request_time" :  datetime.now()
 		}
-	coll.insert_one(data)
+		coll.insert_one(data)
+
+	if action_taken['action']== 'return':
+		coll.update_one({'Request_id' : request_id}, {'$set' : {'Type' : 'return', 'Status' : 'Pending'}})
+	
+	if action_taken['action'] == 're-issue':
+		coll.update_one({'User_Id':user_id}, {'Book_Id' : book_id}, {'$set' : {'Type' : 're-issue', 'Status' : 'Pending'}})
+
+	
 	url=conf['host_url'] + "/v1/requests/" + request_id
 	response = json.dumps({"Status_Url" : url})
 	return response
@@ -99,6 +124,16 @@ def all_requests():
 	get=coll.find({},{'_id' : False})
 	mydict=dumps(get)
 	return mydict
+
+def get_request_params(dict):
+	conn=MongoClient(conf['mongo_url'])
+	db=conn.Books
+	coll=db.Request
+	get=coll.find(dict, {'_id': False})
+	mydict=dumps(get)
+	return mydict
+
+
 
 
 

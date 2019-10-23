@@ -1,0 +1,58 @@
+---
+
+- name: Deploy Playbook
+  hosts: all
+  tasks:
+
+    # Before this, pip needs to be updated
+    # - name: Installing python3
+    #   become: yes
+    #   raw: yes | yum install python36
+
+    # - name: Installing setupTools to get ready for pip3 install
+    #   become: yes
+    #   raw: yes | yum install python36-setuptools
+
+    # - name: Install pip using easy_install
+    #   become: yes
+    #   raw: yes | python3 /usr/bin/easy_install-3.6 pip
+    
+    - name: Installing flask and related dependencies
+      become: yes
+      pip:
+        name: 
+          - argparse 
+          - cheetah 
+          - oauth 
+          - PrettyTable 
+          - pyserial
+          - pymongo
+          - flask
+          - flask_swagger_ui
+          - dnspython
+          - flask_cors
+      environment: 
+        PATH: /usr/local/bin:{{ ansible_env.PATH }}
+    
+
+    - name: Create content directory on host
+      become: yes
+      file:
+        path: /opt/esp
+        state: directory
+        mode: '0644'
+
+
+    - name: Copy app server content
+      become: yes
+      copy:
+        src: /Users/rahuly/pythonWork/LMP
+        dest: /opt/esp
+
+
+        
+    - name: Start webserver after changing directory
+      become: yes
+      shell: nohup python apis.py </dev/null >server.log 2>&1 &
+      args:
+        chdir: /opt/esp/LMP

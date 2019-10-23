@@ -1,9 +1,13 @@
 from functions import *
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 from flask_swagger_ui import get_swaggerui_blueprint
 import json
 
 app=Flask(__name__)
+
+# Supporting Cross Origin requests for all APIs
+cors = CORS(app)
 
 ### swagger specific ###
 SWAGGER_URL = '/swagger'
@@ -57,6 +61,23 @@ def get_book_deatils(Book_id):
 	return response, 200
 
 
+@app.route('/v1/books', methods=['GET'])
+def get_books_onparams():
+	if request.args:
+		dict = {}
+		if 'title' in request.args:
+			dict['title'] = request.args['title']
+		if 'authors' in request.args:
+			dict['authors'] = request.args['authors']
+		if 'language_code' in request.args:
+			dict['language_code'] = request.args['language_code']
+		response=display_book_onparams(dict)
+
+	else :
+		response = display_all_books()
+	return response, 200
+
+
 @app.route('/v1/books/<string:Book_id>', methods=['DELETE'])
 def delete_book(Book_id):
 	response = del_book(Book_id)
@@ -73,13 +94,26 @@ def get_user_requests(requestid):
 	response=request_details(requestid)
 	return response, 200
 
+
 @app.route('/v1/requests', methods=['GET'])
 def get_all_requests():
-	response=all_requests()
+	if request.args:
+		dict={}
+		if 'Type' in request.args:
+			dict['Type'] = request.args['Type']
+		if 'Status' in request.args:
+			dict['Status'] = request.args['Status']
+		response = get_request_params(dict)
+
+	else :
+		response=all_requests()
 	return response, 200
+
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0',port=80)
+    #app.run(debug=True)
 
 # http_json_string='''{"UID" : "1", "Name" : "Urvashi", "Zip" : "205001"}'''
 # user_id='''{"UID" : "2"}'''
