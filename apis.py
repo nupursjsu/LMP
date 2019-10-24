@@ -66,11 +66,11 @@ def get_books_onparams():
 	if request.args:
 		dict = {}
 		if 'title' in request.args:
-			dict['title'] = request.args['title']
+			dict['title'] = {"$regex" : request.args['title']}
 		if 'authors' in request.args:
-			dict['authors'] = request.args['authors']
+			dict['authors'] = {"$regex" : request.args['authors']}
 		if 'language_code' in request.args:
-			dict['language_code'] = request.args['language_code']
+			dict['language_code'] = {"$regex" : request.args['language_code']}
 		response=display_book_onparams(dict)
 
 	else :
