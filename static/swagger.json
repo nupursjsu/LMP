@@ -268,6 +268,60 @@
             }
           }
         }
+      },
+      "get": {
+        "tags": [
+          "Book APIs"
+        ],
+        "summary": "Get multiple Books data based on search criteria",
+        "parameters": [
+        {
+          "name": "title",
+          "in": "query",
+          "required": false,
+          "description": "Title to search with",
+          "type": "string",
+          "schema": {
+              "type": "string"
+          }
+        },
+        {
+          "name": "authors",
+          "in": "query",
+          "required": false,
+          "description": "Authors to search Books of",
+          "type": "string",
+          "schema": {
+              "type": "string"
+          }
+        },
+        {
+          "name": "language_code",
+          "in": "query",
+          "required": false,
+          "description": "Language code to search Books of",
+          "type": "string",
+          "schema": {
+              "type": "string"
+          }
+        }],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/components/schemas/books"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/components/schemas/BadRequest"
+            }
+          }
+        }
       }
     },
     "/requests/{requestId}": {
