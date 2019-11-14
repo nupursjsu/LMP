@@ -3,6 +3,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_swagger_ui import get_swaggerui_blueprint
 import json
+import pymongo
 
 app=Flask(__name__)
 
@@ -63,18 +64,21 @@ def get_book_deatils(Book_id):
 
 @app.route('/v1/books', methods=['GET'])
 def get_books_onparams():
-	if request.args:
+	
+	if 'offset' and 'limit' in request.args:
+		offset = int(request.args['offset'])
+		limit = int(request.args['limit'])
+
+		response = display_all_books(offset, limit)
+
+	else:
 		dict = {}
 		if 'title' in request.args:
 			dict['title'] = {"$regex" : request.args['title'], '$options' : 'i'}
 		if 'authors' in request.args:
 			dict['authors'] = {"$regex" : request.args['authors'], '$options' : 'i'}
-		if 'language_code' in request.args:
-			dict['language_code'] = {"$regex" : request.args['language_code'], '$options' : 'i'}
-		response=display_book_onparams(dict)
-
-	else :
-		response = display_all_books()
+		response = display_book_onparams(dict)
+		
 	return response, 200
 
 

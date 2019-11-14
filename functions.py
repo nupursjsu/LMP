@@ -3,6 +3,8 @@ from bson.json_util import dumps
 from settings import *
 import json
 from datetime import datetime
+from flask import Flask, jsonify, request
+import pymongo
 
 def user(user_details):
     conn = MongoClient(conf['mongo_url'])
@@ -45,7 +47,7 @@ def add_book(book_details):
 	book_id = book_details['bookID']
 	book_details['_id'] = book_id
 	db=conn.Books
-	coll=db.library_books
+	coll=db.library_books_new
 	put=coll.insert_one(book_details)
 	return json.dumps({"Success" : "Book has been added"})
 
@@ -53,31 +55,45 @@ def add_book(book_details):
 def del_book(book_id):
 	conn=MongoClient(conf['mongo_url'])
 	db=conn.Books
-	coll=db.library_books
+	coll=db.library_books_new
 	coll.delete_one({'bookID' : book_id})
 	return json.dumps({"Success" : "Book has been deleted"})
 
 def display_book(book_id):
 	conn=MongoClient(conf['mongo_url'])
 	db=conn.Books
-	coll=db.library_books
+	coll=db.library_books_new
 	get=coll.find_one({'bookID' : book_id},{'_id' : False})
 	mydict=dumps(get)
 	return mydict
 
-def display_all_books():
+def display_all_books(offset, limit):
 	conn=MongoClient(conf['mongo_url'])
 	db=conn.Books
-	coll=db.library_books
-	get=coll.find({}, {'_id':False})
-	mydict=dumps(get)
-	return mydict
+	coll=db.library_books_new
+	books = coll.find({}, {'_id' : False}).skip(offset).sort('bookID', pymongo.ASCENDING).limit(limit)
+	output = []
+	for i in books:
+		output.append({'title': i['title'], 'bookID' : i['bookID'], 'isbn' :i['isbn'], 'authors' : i['authors'], 'year' : i['year'], 'publisher' : i['publisher'], 'average_rating' : i['average_rating']})
+
+	next_url = '/v1/books?limit=' + str(limit) + '&offset=' + str(offset + limit)
+	prev_url = '/v1/books?limit=' + str(limit) + '&offset=' + str(offset - limit)
+	
+	return jsonify({'result' : output, 'prev_url' : prev_url, 'next_url' : next_url})
+	
+# def display_all_books():
+# 	conn=MongoClient(conf['mongo_url'])
+# 	db=conn.Books
+# 	coll=db.library_books_new
+# 	get = coll.find({}, {'_id' : False})
+# 	mydict=dumps(get)
+# 	return mydict
 
 
 def display_book_onparams(dict):
 	conn=MongoClient(conf['mongo_url'])
 	db=conn.Books
-	coll=db.library_books
+	coll=db.library_books_new
 	get=coll.find(dict, {'_id' : False})
 	mydict=dumps(get)
 	return mydict
@@ -142,7 +158,7 @@ def get_request_params(dict):
 # 	bid=json.loads(http_book_id)
 # 	conn=MongoClient(conf['mongo_url'])
 # 	db=conn.Books
-# 	coll=db.library_books
+# 	coll=db.library_books_new
 # 	coll.update_one(bid, {"$inc" : {"Copies" : 1}})
 
 # GET /v1/books/<bookId>
@@ -169,7 +185,7 @@ def get_request_params(dict):
 # 	print(search)
 # 	conn=MongoClient(conf['mongo_url'])
 # 	db=conn.Books
-# 	coll=db.library_books
+# 	coll=db.library_books_new
 # 	get=coll.find({"title" : {"$regex": search}}, {'_id' : False})
 # 	print(get)
 # 	mydict=dumps(get)
