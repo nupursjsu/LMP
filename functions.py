@@ -71,7 +71,8 @@ def display_all_books(offset, limit):
 	conn=MongoClient(conf['mongo_url'])
 	db=conn.Books
 	coll=db.library_books_new
-	books = coll.find({}, {'_id' : False}).skip(offset).sort('bookID', pymongo.ASCENDING).limit(limit)
+	# books = coll.find({}, {'_id' : False}).skip(offset).sort('bookID', pymongo.ASCENDING).limit(limit)
+	books = coll.find({}, {'_id' : False}).sort('_id', pymongo.ASCENDING).skip(offset).limit(limit)
 	output = []
 	for i in books:
 		output.append({'title': i['title'], 'bookID' : i['bookID'], 'isbn' :i['isbn'], 'authors' : i['authors'], 'year' : i['year'], 'publisher' : i['publisher'], 'average_rating' : i['average_rating']})
