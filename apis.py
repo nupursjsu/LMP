@@ -113,7 +113,10 @@ def get_all_requests():
 		response=all_requests()
 	return response, 200
 
-
+@app.route('/v1/books/recommend/<string:Book_id>', methods=['GET'])
+def get_recommended_books(Book_id):
+	response = recommend_books(Book_id)
+	return response, 200
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0',port=80)
