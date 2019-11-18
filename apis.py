@@ -64,21 +64,24 @@ def get_book_deatils(Book_id):
 
 @app.route('/v1/books', methods=['GET'])
 def get_books_onparams():
-	
-	if 'offset' and 'limit' in request.args:
-		offset = int(request.args['offset'])
-		limit = int(request.args['limit'])
-
-		response = display_all_books(offset, limit)
-
-	else:
-		dict = {}
-		if 'title' in request.args:
-			dict['title'] = {"$regex" : request.args['title'], '$options' : 'i'}
-		if 'authors' in request.args:
-			dict['authors'] = {"$regex" : request.args['authors'], '$options' : 'i'}
-		response = display_book_onparams(dict)
 		
+	if 'offset' in request.args:
+		offset = int(request.args['offset'])
+	else:
+		offset = 0
+
+	if 'limit' in request.args:	
+		limit = int(request.args['limit'])
+	else:
+		limit = 10
+	
+	dict = {}
+	if 'title' in request.args:
+		dict['title'] = {"$regex" : request.args['title'], '$options' : 'i'}
+	if 'authors' in request.args:
+		dict['authors'] = {"$regex" : request.args['authors'], '$options' : 'i'}
+	
+	response = display_all_books(offset, limit, dict)
 	return response, 200
 
 
@@ -87,30 +90,33 @@ def delete_book(Book_id):
 	response = del_book(Book_id)
 	return response, 200
 
-@app.route('/v1/users/<string:userid>/books/<string:bookid>', methods=['POST'])
-def book_action(userid, bookid):
-	action_taken = request.get_json()
-	response = book_action_taken(userid, bookid, action_taken)
+@app.route('/v1/requests', methods=['POST'])
+def create_user_request():
+	request_json = request.get_json()
+	response = create_request(request_json)
 	return response, 200
 
 @app.route('/v1/requests/<string:requestid>', methods=['GET'])
-def get_user_requests(requestid):
-	response=request_details(requestid)
+def get_user_request(requestid):
+	response=get_request(requestid)
+	return response, 200
+
+@app.route('/v1/requests/<string:requestid>', methods=['PATCH'])
+def update_user_request(requestid):
+	body = request.get_json()
+	Type = body['Type']
+	response=update_request(requestid, Type)
 	return response, 200
 
 
 @app.route('/v1/requests', methods=['GET'])
 def get_all_requests():
-	if request.args:
-		dict={}
-		if 'Type' in request.args:
-			dict['Type'] = request.args['Type']
-		if 'Status' in request.args:
-			dict['Status'] = request.args['Status']
-		response = get_request_params(dict)
-
-	else :
-		response=all_requests()
+	dict={}
+	if 'Type' in request.args:
+		dict['Type'] = request.args['Type']
+	if 'Status' in request.args:
+		dict['Status'] = request.args['Status']
+	response = get_request_params(dict)
 	return response, 200
 
 @app.route('/v1/books/<string:Book_id>/recommendations', methods=['GET'])
@@ -119,8 +125,8 @@ def get_recommended_books(Book_id):
 	return response, 200
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1',port=8080)
-    #app.run(debug=True)
+    #app.run(host='127.0.0.1',port=8080)
+    app.run(host=conf['host'],port=conf['port'], debug=True)
 
 # http_json_string='''{"UID" : "1", "Name" : "Urvashi", "Zip" : "205001"}'''
 # user_id='''{"UID" : "2"}'''

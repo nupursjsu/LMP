@@ -1,4 +1,18 @@
 {
+  "tags": [
+    {
+      "name": "User APIs",
+      "description": "APIs serving for User profile manipulation"
+    },
+    {
+      "name": "Book APIs",
+      "description": "APIs serving for books manipulation"
+    },
+    {
+      "name": "Request APIs",
+      "description": "APIs serving Library operations"
+    }
+  ],
   "openapi": "3.0.0",
   "info": {
     "description": "APIs supporting Library Management Platform (LMP)",
@@ -17,20 +31,6 @@
       "url": "/v1"
     }
   ],
-  "tags": [
-    {
-      "name": "User APIs",
-      "description": "APIs serving for User profile manipulation"
-    },
-    {
-      "name": "Book APIs",
-      "description": "APIs serving for books manipulation"
-    },
-    {
-      "name": "Request APIs",
-      "description": "APIs serving Library operations"
-    }
-  ],
   "paths": {
     "/users/{userId}": {
       "parameters": [
@@ -41,7 +41,7 @@
           "description": "ID of the User we want to work on",
           "type": "string",
           "schema": {
-              "$ref": "#/components/schemas/id"
+            "$ref": "#/components/schemas/id"
           }
         }
       ],
@@ -75,6 +75,40 @@
             "description": "OK",
             "schema": {
               "$ref": "#/components/schemas/Success"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/components/schemas/BadRequest"
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "User APIs"
+        ],
+        "summary": "Update a User's data",
+        "requestBody": {
+          "description": "User Profile Object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserProfile"
+              }
+            }
+          }
+        },
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/components/schemas/UserProfile"
             }
           },
           "400": {
@@ -122,64 +156,6 @@
         }
       }
     },
-    "/users/{userId}/books/{bookId}": {
-      "parameters": [
-        {
-          "name": "userId",
-          "in": "path",
-          "required": true,
-          "description": "ID of the User we want to work on",
-          "type": "string",
-          "schema": {
-              "$ref": "#/components/schemas/id"
-          }
-        },
-        {
-          "name": "bookId",
-          "in": "path",
-          "required": true,
-          "description": "ID of the Book we want to issue/reissue/return",
-          "type": "string",
-          "schema": {
-              "$ref": "#/components/schemas/id"
-          }
-        }
-      ],
-      "post": {
-        "tags": [
-          "User APIs"
-        ],
-        "summary": "Adding a request to issue/return/reissue a book",
-        "requestBody": {
-          "description": "Action Data",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/action"
-              }
-            }
-          }
-        },
-        "produces": [
-          "application/json"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/components/schemas/status"
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "schema": {
-              "$ref": "#/components/schemas/BadRequest"
-            }
-          }
-        }
-      }
-    },
     "/books/{bookId}": {
       "parameters": [
         {
@@ -189,7 +165,7 @@
           "description": "ID of the Book we want to work on",
           "type": "string",
           "schema": {
-              "$ref": "#/components/schemas/id"
+            "$ref": "#/components/schemas/id"
           }
         }
       ],
@@ -223,6 +199,40 @@
             "description": "OK",
             "schema": {
               "$ref": "#/components/schemas/Success"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/components/schemas/BadRequest"
+            }
+          }
+        }
+      }
+    },
+    "/books/{Book_id}/recommendations": {
+      "parameters": [
+        {
+          "name": "Book_id",
+          "in": "path",
+          "required": true,
+          "description": "ID of the Book we want to work on",
+          "type": "string",
+          "schema": {
+            "$ref": "#/components/schemas/Book_id"
+          }
+        }
+      ],
+      "get": {
+        "tags": [
+          "Book APIs"
+        ],
+        "summary": "Returns Book Recommendations",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/components/schemas/book"
             }
           },
           "400": {
@@ -275,36 +285,47 @@
         ],
         "summary": "Get multiple Books data based on search criteria",
         "parameters": [
-        {
-          "name": "title",
-          "in": "query",
-          "required": false,
-          "description": "Title to search with",
-          "type": "string",
-          "schema": {
+          {
+            "name": "title",
+            "in": "query",
+            "required": false,
+            "description": "Title to search with",
+            "type": "string",
+            "schema": {
               "type": "string"
-          }
-        },
-        {
-          "name": "authors",
-          "in": "query",
-          "required": false,
-          "description": "Authors to search Books of",
-          "type": "string",
-          "schema": {
+            }
+          },
+          {
+            "name": "authors",
+            "in": "query",
+            "required": false,
+            "description": "Authors to search Books of",
+            "type": "string",
+            "schema": {
               "type": "string"
-          }
-        },
-        {
-          "name": "language_code",
-          "in": "query",
-          "required": false,
-          "description": "Language code to search Books of",
-          "type": "string",
-          "schema": {
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "description": "No. of books to be ommited post search. By default it is 0",
+            "type": "string",
+            "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "No. of books to be shown. By default it is 10",
+            "type": "string",
+            "schema": {
+              "type": "string"
+            }
           }
-        }],
+        ],
         "produces": [
           "application/json"
         ],
@@ -333,7 +354,7 @@
           "description": "ID of the Request to get the status for",
           "type": "string",
           "schema": {
-              "$ref": "#/components/schemas/id"
+            "$ref": "#/components/schemas/id"
           }
         }
       ],
@@ -359,10 +380,49 @@
             }
           }
         }
+      },
+      "patch": {
+        "tags": [
+          "Request APIs"
+        ],
+        "summary": "Update a User's request data",
+        "requestBody": {
+          "description": "Request type Object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Type"
+              }
+            }
+          }
+        },
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/components/schemas/Type"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/components/schemas/BadRequest"
+            }
+          }
+        }
       }
     },
     "/requests": {
-      "parameters": [
+      "get": {
+        "tags": [
+          "Request APIs"
+        ],
+        "summary": "Get multiple request's data",
+        "parameters": [
         {
           "name": "status",
           "in": "query",
@@ -370,7 +430,11 @@
           "description": "status of the library operation request",
           "schema": {
             "type": "string",
-            "enum": ["pending", "approved", "rejected"]
+            "enum": [
+              "Approved",
+              "issued",
+              "Returned"
+            ]
           }
         },
         {
@@ -380,15 +444,13 @@
           "description": "status of the library operation request",
           "schema": {
             "type": "string",
-            "enum": ["issue", "return", "reissue"]
-          }  
+            "enum": [
+              "issue",
+              "reissue"
+            ]
+          }
         }
       ],
-      "get": {
-        "tags": [
-          "Request APIs"
-        ],
-        "summary": "Get multiple request's data",
         "produces": [
           "application/json"
         ],
@@ -406,8 +468,43 @@
             }
           }
         }
+      },
+      "post": {
+        "tags": [
+          "Request APIs"
+        ],
+        "summary": "Creating a request to issue a book",
+        "requestBody": {
+          "description": "Request Data",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/action"
+              }
+            }
+          }
+        },
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/components/schemas/status"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/components/schemas/BadRequest"
+            }
+          }
+        }
       }
-    }
+    },
+    "": ""
   },
   "components": {
     "schemas": {
@@ -453,6 +550,13 @@
           }
         }
       },
+      "Book_id": {
+        "properties": {
+          "id": {
+            "type": "string"
+          }
+        }
+      },
       "book": {
         "type": "object",
         "properties": {
@@ -487,9 +591,21 @@
       "action": {
         "type": "object",
         "properties": {
-          "action": {
+          "Type": {
             "type": "string",
-            "enum": ["issue", "return", "reissue"]
+            "format": "string"
+          },
+          "bookID": {
+            "type": "string",
+            "format": "string"
+          },
+          "title": {
+            "type": "string",
+            "format": "string"
+          },
+          "userId": {
+            "type": "string",
+            "format": "string"
           }
         }
       },
@@ -498,6 +614,15 @@
         "properties": {
           "action": {
             "type": "statusUrl",
+            "format": "string"
+          }
+        }
+      },
+      "Type": {
+        "type": "object",
+        "properties": {
+          "Type": {
+            "type": "string",
             "format": "string"
           }
         }
@@ -520,7 +645,7 @@
           "status": {
             "type": "string",
             "format": "string"
-          },
+          }
         }
       },
       "requests": {

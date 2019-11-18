@@ -9,6 +9,7 @@ import pandas as pd
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
 from scipy.sparse import csr_matrix
+import uuid
 
 def user(user_details):
     conn = MongoClient(conf['mongo_url'])
@@ -71,78 +72,72 @@ def display_book(book_id):
 	mydict=dumps(get)
 	return mydict
 
-def display_all_books(offset, limit):
+def display_all_books(offset, limit, dict):
 	conn=MongoClient(conf['mongo_url'])
 	db=conn.Books
 	coll=db.library_books_new
-	# books = coll.find({}, {'_id' : False}).skip(offset).sort('bookID', pymongo.ASCENDING).limit(limit)
-	books = coll.find({}, {'_id' : False}).sort('_id', pymongo.ASCENDING).skip(offset).limit(limit)
-	output = []
-	for i in books:
-		output.append({'title': i['title'], 'bookID' : i['bookID'], 'isbn' :i['isbn'], 'authors' : i['authors'], 'year' : i['year'], 'publisher' : i['publisher'], 'average_rating' : i['average_rating']})
-
-	next_url = '/v1/books?limit=' + str(limit) + '&offset=' + str(offset + limit)
-	prev_url = '/v1/books?limit=' + str(limit) + '&offset=' + str(offset - limit)
-	
-	return jsonify({'result' : output, 'prev_url' : prev_url, 'next_url' : next_url})
-	
-# def display_all_books():
-# 	conn=MongoClient(conf['mongo_url'])
-# 	db=conn.Books
-# 	coll=db.library_books_new
-# 	get = coll.find({}, {'_id' : False})
-# 	mydict=dumps(get)
-# 	return mydict
-
-
-def display_book_onparams(dict):
-	conn=MongoClient(conf['mongo_url'])
-	db=conn.Books
-	coll=db.library_books_new
-	get=coll.find(dict, {'_id' : False})
+	get = coll.find(dict, {'_id' : False}).sort('_id', pymongo.ASCENDING).skip(offset).limit(limit)
 	mydict=dumps(get)
 	return mydict
 
-def book_action_taken(user_id, book_id, action_taken):
+def create_request(request_json):
 	conn=MongoClient(conf['mongo_url'])
 	db=conn.Books
 	coll=db.Request
-	request_id = user_id + "-" +book_id
-	if action_taken['action']=='issue':
+	coll2=db.library_books_new
+	request_id = str(uuid.uuid1())
+	book_id = request_json['bookID']
+	user_id = request_json['userId']
+	title = request_json['title']
+	if request_json['Type']=='issue':
 		data = { "_id" : request_id, 
 		"Request_id": request_id,
 		"User_Id" : user_id, 
 		"Book_Id" : book_id, 
+		"title" : title,
 		"Type" : "issue", 
-		"Status" : "Pending", 
+		"Status" : "Approved", 
 		"request_time" :  datetime.now()
 		}
 		coll.insert_one(data)
+		coll2.update_one({'bookID' : book_id}, {'$inc' : {'count' : -1}})
 
-	if action_taken['action']== 'return':
-		coll.update_one({'Request_id' : request_id}, {'$set' : {'Type' : 'return', 'Status' : 'Pending'}})
-	
-	if action_taken['action'] == 're-issue':
-		coll.update_one({'User_Id':user_id}, {'Book_Id' : book_id}, {'$set' : {'Type' : 're-issue', 'Status' : 'Pending'}})
-
-	
 	url=conf['host_url'] + "/v1/requests/" + request_id
 	response = json.dumps({"Status_Url" : url})
 	return response
 
-def request_details(request_id):
+# request_id and Type mandatory
+def update_request(request_id, Type):
 	conn=MongoClient(conf['mongo_url'])
 	db=conn.Books
 	coll=db.Request
-	get=coll.find_one({'Request_id':request_id})
-	mydict=dumps(get)
-	return mydict
+	coll2=db.library_books_new
 
-def all_requests():
+	if (Type == 'reissue'):
+		document = dict(coll.find_one({'Request_id':request_id},{'request_time' : 1, 'issue_time' : 1, '_id' : False}))
+		document['re-issue_time'] = datetime.now()
+		coll.update({'Request_id':request_id}, {'$set' : {'Type' : 'reissue', 'request_time' : datetime.now(), 'issue_time' : datetime.now()}, '$push' : {'history' : document	}})
+		return json.dumps({"Success" : "Book has been re-issued"})
+
+	elif (Type == 'return'):
+		coll.update({'Request_id':request_id}, {'$set' : {'Status' : 'Returned', 'return_time' :  datetime.now()}})
+		document = dict(coll.find_one({'Request_id':request_id},{'Book_Id' : 1, '_id' : False }))
+		document['bookID'] = document['Book_Id']
+		document.pop("Book_Id")
+		coll2.update(document, {'$inc' : {'count' : 1}})
+		return json.dumps({"Success" : "Book has been returned"})
+
+	elif (Type == 'issue'):
+		coll.update({'Request_id':request_id}, {'$set' : {'Status' : 'issued', 'issue_time' : datetime.now()}})
+		return json.dumps({"Success" : "Book has been issued"})
+
+
+
+def get_request(request_id):
 	conn=MongoClient(conf['mongo_url'])
 	db=conn.Books
 	coll=db.Request
-	get=coll.find({},{'_id' : False})
+	get=coll.find_one({'Request_id':request_id},{'_id' : False})
 	mydict=dumps(get)
 	return mydict
 
@@ -153,7 +148,6 @@ def get_request_params(dict):
 	get=coll.find(dict, {'_id': False})
 	mydict=dumps(get)
 	return mydict
-
 
 def recommend_books(book_id):
 
@@ -166,7 +160,7 @@ def recommend_books(book_id):
 	#create a pivot table 
 	books_pivot = books.pivot(index='bookTitle',columns = 'userID', values = 'bookRating').fillna(0)
 	books_matrix = csr_matrix(books_pivot.values)
-	model_knn = NearestNeighbors(metric = 'cosine',algorithm = 'brute')
+	model_knn = NearestNeighbors(metric = 'cosine', algorithm = 'brute')
 	model_knn.fit(books_matrix)
 
 	query_index = int(book_id)
