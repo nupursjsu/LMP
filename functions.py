@@ -149,6 +149,14 @@ def get_request_params(dict):
 	mydict=dumps(get)
 	return mydict
 
+def get_requested_books(user_id):
+	conn=MongoClient(conf['mongo_url'])
+	db=conn.Books
+	coll=db.Request
+	get = coll.find({'User_Id' : user_id, 'Status' : {'$in' : ["Approved", "issued"]}}, {'_id' : False, 'Book_Id' : 1})
+	mydict=dumps(get)
+	return mydict
+
 def recommend_books(book_id):
 
 	conn=MongoClient(conf['mongo_url'])
@@ -158,7 +166,7 @@ def recommend_books(book_id):
 	books = pd.read_csv('userRatings.csv')
 
 	#create a pivot table 
-	books_pivot = books.pivot(index='bookTitle',columns = 'userID', values = 'bookRating').fillna(0)
+	books_pivot = books.pivot(index='bookTitle', columns = 'userID', values = 'bookRating').fillna(0)
 	books_matrix = csr_matrix(books_pivot.values)
 	model_knn = NearestNeighbors(metric = 'cosine', algorithm = 'brute')
 	model_knn.fit(books_matrix)

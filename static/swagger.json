@@ -416,6 +416,43 @@
         }
       }
     },
+    "/requests/users/{userId}": {
+      "parameters": [
+        {
+          "name": "userId",
+          "in": "path",
+          "required": true,
+          "description": "ID of the User we want to work on",
+          "type": "string",
+          "schema": {
+            "$ref": "#/components/schemas/id"
+          }
+        }
+      ],
+      "get": {
+        "tags": [
+          "Request APIs"
+        ],
+        "summary": "Returns s user's requested books data",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/components/schemas/id"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/components/schemas/BadRequest"
+            }
+          }
+        }
+      }
+    },
     "/requests": {
       "get": {
         "tags": [
@@ -503,8 +540,7 @@
           }
         }
       }
-    },
-    "": ""
+    }
   },
   "components": {
     "schemas": {

@@ -119,14 +119,23 @@ def get_all_requests():
 	response = get_request_params(dict)
 	return response, 200
 
+
+@app.route('/v1/requests/users/<string:User_Id>', methods = ['GET'])
+def get_requestedbooks(User_Id):
+	response = get_requested_books(User_Id)
+	return response, 200
+
 @app.route('/v1/books/<string:Book_id>/recommendations', methods=['GET'])
 def get_recommended_books(Book_id):
 	response = recommend_books(Book_id)
 	return response, 200
 
 if __name__ == '__main__':
+	app.run(host='0.0.0.0',port=80)
+	#app.run(debug=True)
+
     #app.run(host='127.0.0.1',port=8080)
-    app.run(host=conf['host'],port=conf['port'], debug=True)
+    #app.run(host=conf['host'],port=conf['port'], debug=True)
 
 # http_json_string='''{"UID" : "1", "Name" : "Urvashi", "Zip" : "205001"}'''
 # user_id='''{"UID" : "2"}'''
