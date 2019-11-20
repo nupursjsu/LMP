@@ -96,10 +96,25 @@ def create_user_request():
 	response = create_request(request_json)
 	return response, 200
 
-@app.route('/v1/requests/<string:requestid>', methods=['GET'])
-def get_user_request(requestid):
-	response=get_request(requestid)
+
+@app.route('/v1/requests', methods=['GET'])
+def get_user_request():
+	dict = {}
+	if 'Request_id' in request.args:
+		dict['Request_id'] = request.args['Request_id']
+	if 'User_Id' in request.args:
+		dict['User_Id'] = request.args['User_Id']
+	if 'Status' in request.args:
+		value = request.args['Status'].split(",")
+		if len(value) == 1:
+			dict['Status'] = request.args['Status']
+		elif len(value) == 2:
+			dict['Status'] = {'$in' : [value[0], value[1]]}
+	if 'Type' in request.args:
+		dict['Type'] = request.args['Type']
+	response=get_request_params(dict)
 	return response, 200
+
 
 @app.route('/v1/requests/<string:requestid>', methods=['PATCH'])
 def update_user_request(requestid):
@@ -109,26 +124,11 @@ def update_user_request(requestid):
 	return response, 200
 
 
-@app.route('/v1/requests', methods=['GET'])
-def get_all_requests():
-	dict={}
-	if 'Type' in request.args:
-		dict['Type'] = request.args['Type']
-	if 'Status' in request.args:
-		dict['Status'] = request.args['Status']
-	response = get_request_params(dict)
-	return response, 200
-
-
-@app.route('/v1/requests/users/<string:User_Id>', methods = ['GET'])
-def get_requestedbooks(User_Id):
-	response = get_requested_books(User_Id)
-	return response, 200
-
 @app.route('/v1/books/<string:Book_id>/recommendations', methods=['GET'])
 def get_recommended_books(Book_id):
 	response = recommend_books(Book_id)
 	return response, 200
+
 
 if __name__ == '__main__':
 	app.run(host='0.0.0.0',port=80)

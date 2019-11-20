@@ -358,29 +358,6 @@
           }
         }
       ],
-      "get": {
-        "tags": [
-          "Request APIs"
-        ],
-        "summary": "Get a Request's data",
-        "produces": [
-          "application/json"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/components/schemas/book"
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "schema": {
-              "$ref": "#/components/schemas/BadRequest"
-            }
-          }
-        }
-      },
       "patch": {
         "tags": [
           "Request APIs"
@@ -416,78 +393,57 @@
         }
       }
     },
-    "/requests/users/{userId}": {
-      "parameters": [
-        {
-          "name": "userId",
-          "in": "path",
-          "required": true,
-          "description": "ID of the User we want to work on",
-          "type": "string",
-          "schema": {
-            "$ref": "#/components/schemas/id"
-          }
-        }
-      ],
-      "get": {
-        "tags": [
-          "Request APIs"
-        ],
-        "summary": "Returns s user's requested books data",
-        "produces": [
-          "application/json"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/components/schemas/id"
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "schema": {
-              "$ref": "#/components/schemas/BadRequest"
-            }
-          }
-        }
-      }
-    },
     "/requests": {
       "get": {
         "tags": [
           "Request APIs"
         ],
-        "summary": "Get multiple request's data",
+        "summary": "Get request's data based on search criteria",
         "parameters": [
-        {
-          "name": "status",
-          "in": "query",
-          "required": false,
-          "description": "status of the library operation request",
-          "schema": {
+          {
+            "name": "User_Id",
+            "in": "query",
+            "required": false,
+            "description": "ID of the user to work with",
             "type": "string",
-            "enum": [
-              "Approved",
-              "issued",
-              "Returned"
-            ]
-          }
-        },
-        {
-          "name": "type",
-          "in": "query",
-          "required": false,
-          "description": "status of the library operation request",
-          "schema": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Request_id",
+            "in": "query",
+            "required": false,
+            "description": "ID of the Request to get data for",
+            "type": "string",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Status",
+            "in": "query",
+            "required": false,
+            "description": "Status of the request - Approved, Issued, Returned",
+            "type": "string",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Type",
+            "in": "query",
+            "required": false,
+            "description": "Type of the request to work with",
+            "schema": {
             "type": "string",
             "enum": [
               "issue",
               "reissue"
             ]
           }
-        }
-      ],
+          }
+        ],
         "produces": [
           "application/json"
         ],

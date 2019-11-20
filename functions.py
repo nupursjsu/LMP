@@ -128,18 +128,18 @@ def update_request(request_id, Type):
 		return json.dumps({"Success" : "Book has been returned"})
 
 	elif (Type == 'issue'):
-		coll.update({'Request_id':request_id}, {'$set' : {'Status' : 'issued', 'issue_time' : datetime.now()}})
+		coll.update({'Request_id':request_id}, {'$set' : {'Status' : 'Issued', 'issue_time' : datetime.now()}})
 		return json.dumps({"Success" : "Book has been issued"})
 
 
 
-def get_request(request_id):
-	conn=MongoClient(conf['mongo_url'])
-	db=conn.Books
-	coll=db.Request
-	get=coll.find_one({'Request_id':request_id},{'_id' : False})
-	mydict=dumps(get)
-	return mydict
+# def get_request(request_id):
+# 	conn=MongoClient(conf['mongo_url'])
+# 	db=conn.Books
+# 	coll=db.Request
+# 	get=coll.find_one({'Request_id':request_id},{'_id' : False})
+# 	mydict=dumps(get)
+# 	return mydict
 
 def get_request_params(dict):
 	conn=MongoClient(conf['mongo_url'])
@@ -149,13 +149,13 @@ def get_request_params(dict):
 	mydict=dumps(get)
 	return mydict
 
-def get_requested_books(user_id):
-	conn=MongoClient(conf['mongo_url'])
-	db=conn.Books
-	coll=db.Request
-	get = coll.find({'User_Id' : user_id, 'Status' : {'$in' : ["Approved", "issued"]}}, {'_id' : False, 'Book_Id' : 1})
-	mydict=dumps(get)
-	return mydict
+# def get_requested_books(user_id):
+# 	conn=MongoClient(conf['mongo_url'])
+# 	db=conn.Books
+# 	coll=db.Request
+# 	get = coll.find({'User_Id' : user_id, 'Status' : {'$in' : ["Approved", "issued"]}}, {'_id' : False, 'Book_Id' : 1})
+# 	mydict=dumps(get)
+# 	return mydict
 
 def recommend_books(book_id):
 
