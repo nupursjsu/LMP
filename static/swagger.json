@@ -401,6 +401,16 @@
         "summary": "Get request's data based on search criteria",
         "parameters": [
           {
+            "name": "Request_id",
+            "in": "query",
+            "required": false,
+            "description": "ID of the Request to get data for",
+            "type": "string",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
             "name": "User_Id",
             "in": "query",
             "required": false,
@@ -411,10 +421,10 @@
             }
           },
           {
-            "name": "Request_id",
+            "name": "Book_Id",
             "in": "query",
             "required": false,
-            "description": "ID of the Request to get data for",
+            "description": "ID of the book to work with",
             "type": "string",
             "schema": {
               "type": "string"

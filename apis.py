@@ -104,6 +104,8 @@ def get_user_request():
 		dict['Request_id'] = request.args['Request_id']
 	if 'User_Id' in request.args:
 		dict['User_Id'] = request.args['User_Id']
+	if 'Book_Id' in request.args:
+		dict['Book_Id'] = request.args['Book_Id']
 	if 'Status' in request.args:
 		value = request.args['Status'].split(",")
 		if len(value) == 1:
