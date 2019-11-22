@@ -524,6 +524,10 @@
           "zip": {
             "type": "string",
             "format": "string"
+          },
+          "is_admin": {
+            "type": "string",
+            "format": "string"
           }
         }
       },

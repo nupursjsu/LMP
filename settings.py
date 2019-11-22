@@ -4,5 +4,5 @@ conf = {
     #"host_url": "http://127.0.0.1:8080",
     #"host" : "127.0.0.1",
     #"port" : 8080
-    #"host_url": "http://localhost:80",
+    #"host_url": "http://localhost",
 }

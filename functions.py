@@ -24,7 +24,8 @@ def user(user_details):
     conn = MongoClient(conf['mongo_url'])
     uname = user_details['userId']
     user_details['_id']=uname
-    user_details['is_admin'] = "No"
+    if 'is_admin' not in user_details:
+    	user_details['is_admin'] = "No"
     db=conn.Books
     coll=db.myapp_user
     if coll.find({'userId': uname}).count() > 0:
