@@ -11,14 +11,27 @@ from sklearn.neighbors import NearestNeighbors
 from scipy.sparse import csr_matrix
 import uuid
 
+# def user(user_details):
+#     conn = MongoClient(conf['mongo_url'])
+#     uname = user_details['userId']
+#     user_details['_id'] = uname
+#     db=conn.Books
+#     collection=db.myapp_user
+#     put=collection.insert_one(user_details)
+#     return json.dumps({"Success" : "User has been added"})
+
 def user(user_details):
     conn = MongoClient(conf['mongo_url'])
     uname = user_details['userId']
-    user_details['_id'] = uname
+    user_details['_id']=uname
+    user_details['is_admin'] = "No"
     db=conn.Books
-    collection=db.myapp_user
-    put=collection.insert_one(user_details)
-    return json.dumps({"Success" : "User has been added"})
+    coll=db.myapp_user
+    if coll.find({'userId': uname}).count() > 0:
+    	return json.dumps({"Authenticated" : "User already present"})
+    else:
+    	coll.insert_one(user_details)
+    	return json.dumps({"Registered" : "New user has been added"})
 
 
 def display_userdetails(user_id):
@@ -133,14 +146,6 @@ def update_request(request_id, Type):
 
 
 
-# def get_request(request_id):
-# 	conn=MongoClient(conf['mongo_url'])
-# 	db=conn.Books
-# 	coll=db.Request
-# 	get=coll.find_one({'Request_id':request_id},{'_id' : False})
-# 	mydict=dumps(get)
-# 	return mydict
-
 def get_request_params(dict):
 	conn=MongoClient(conf['mongo_url'])
 	db=conn.Books
@@ -149,13 +154,6 @@ def get_request_params(dict):
 	mydict=dumps(get)
 	return mydict
 
-# def get_requested_books(user_id):
-# 	conn=MongoClient(conf['mongo_url'])
-# 	db=conn.Books
-# 	coll=db.Request
-# 	get = coll.find({'User_Id' : user_id, 'Status' : {'$in' : ["Approved", "issued"]}}, {'_id' : False, 'Book_Id' : 1})
-# 	mydict=dumps(get)
-# 	return mydict
 
 def recommend_books(book_id):
 
