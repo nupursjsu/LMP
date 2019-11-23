@@ -1,0 +1,28 @@
+---
+
+- name: Deploy NGINX Playbook
+  hosts: all
+  tasks:
+
+    - name: Installing nginx and related dependencies
+      become: yes
+      yum:
+        name: "{{ packages }}"
+      vars:
+        packages:
+          nginx
+
+    - name: Copy nginx.conf to the appropriate location
+      become: yes
+      copy:
+        src: /opt/esp/LMP/nginx.conf
+        dest: /etc/nginx/nginx.conf
+        remote_src: yes
+
+    - name: Test the updated NGINX configuration
+      become: yes
+      shell: nginx -t
+
+    - name: Reload the new NGINX configuration
+      become: yes
+      shell: nginx -s reload

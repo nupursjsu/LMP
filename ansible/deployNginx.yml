@@ -1,0 +1,18 @@
+---
+
+- name: Copy Certificates to remote (EC2) host 
+  hosts: all
+  tasks:
+    - name: Copy certificate.pem to the appropriate location
+      become: yes
+      copy:
+        src: /Users/rahuly/ssl/certificate.pem
+        dest: /opt/ssl/certificate.pem
+        remote_src: yes
+
+    - name: Copy key.pem to the appropriate location
+      become: yes
+      copy:
+        src: /Users/rahuly/ssl/key.pem
+        dest: /opt/ssl/key.pem
+        remote_src: yes
