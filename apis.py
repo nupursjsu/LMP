@@ -133,18 +133,5 @@ def get_recommended_books(Book_id):
 
 
 if __name__ == '__main__':
-	app.run(host='0.0.0.0',port=80)
+        app.run(host=conf['host'],port=conf['port'])
 	#app.run(debug=True)
-
-    #app.run(host='127.0.0.1',port=8080)
-    #app.run(host=conf['host'],port=conf['port'], debug=True)
-
-# http_json_string='''{"UID" : "1", "Name" : "Urvashi", "Zip" : "205001"}'''
-# user_id='''{"UID" : "2"}'''
-# http_zip='''{"UID" : "2", "Zip" : "19999"}'''
-# http_book_details='''{"Book_id" : "4", "B_Name" : "Martian", "Genre" : "Fiction", "Copies" : 2}'''
-# http_book_details1='''{"bookID":"1", "title":"Martian", "authors":"Andy Weir" ,"average_rating":"4.56", "isbn":"0439785960", "isbn13":"9780439785969", "language_code":"eng", "# num_pages":"652", "ratings_count":"1944099", "text_reviews_count":"26249"}'''
-# http_delete_book='''{"title" : "Martian"}'''
-# http_book_id='''{"Book_id" : "2"}'''
-
-
