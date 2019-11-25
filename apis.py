@@ -145,5 +145,5 @@ def get_recommended_books(Book_id):
 	return response, 200
 
 if __name__ == '__main__':
-    app.run(use_reloader=True, host=conf['host'],port=conf['port'])
-    #app.run(use_reloader=True, debug=True)
+    app.run(use_reloader=False, host=conf['host'],port=conf['port'])
+    #app.run(debug=True)

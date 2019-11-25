@@ -34,6 +34,7 @@
           - pandas
           - scipy
           - scikit-learn
+          - gunicorn
 
       environment: 
         PATH: /usr/local/bin:{{ ansible_env.PATH }}
@@ -49,12 +50,10 @@
 
     - name: Copy app server content
       become: yes
-      copy:
+      synchronize:
         src: /Users/rahuly/pythonWork/LMP
         dest: /opt/esp
 
-
-        
     - name: Start webserver after changing directory
       become: yes
       shell: nohup python apis.py </dev/null >server.log 2>&1 &

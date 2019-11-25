@@ -13,6 +13,15 @@
     shell: "kill {{ item }}"
     with_items: "{{ items.stdout_lines }}"
 
+  - name: Getting running gunicorn server process id
+    shell: ps aux | grep [g]unicorn | awk '{ print $2 }'
+    register: gunicornItems
+
+  - name: Stopping the gunicorn process
+    become: yes
+    shell: "kill {{ gunicornItems }}"
+    with_items: "{{ gunicornItems.stdout_lines }}"
+
   - name: Delete existing content dir from host
     become: yes
     file:
