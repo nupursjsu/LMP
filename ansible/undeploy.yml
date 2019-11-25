@@ -16,5 +16,5 @@
   - name: Delete existing content dir from host
     become: yes
     file:
-      path: /opt/esp
+      path: /opt/esp/LMP
       state: absent
