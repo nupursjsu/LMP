@@ -1,11 +1,11 @@
 from functions import *
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 from flask_swagger_ui import get_swaggerui_blueprint
-import json
+import json, os
 import pymongo
 
-app=Flask(__name__)
+app=Flask(__name__, static_folder="build/static", template_folder="build")
 
 # Supporting Cross Origin requests for all APIs
 cors = CORS(app)
@@ -21,6 +21,20 @@ SWAGGERUI_BLUEPRINT = get_swaggerui_blueprint(
     }
 )
 app.register_blueprint(SWAGGERUI_BLUEPRINT, url_prefix=SWAGGER_URL)
+
+@app.route("/static/swagger.json")
+def serveSwagger():
+    return send_from_directory("static", 'swagger.json')
+
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serveStaticFilesAndUI(path):
+    if path != "" and os.path.exists(app.static_folder + '/' + path):
+        return send_from_directory(app.static_folder, path)
+    elif path != "" and os.path.exists(app.template_folder + '/' + path):
+        return send_from_directory(app.template_folder, path)
+    else:
+        return send_from_directory(app.template_folder, 'index.html')
 
 @app.route('/v1/users', methods=['POST'])
 def post_user_details():
@@ -125,13 +139,11 @@ def update_user_request(requestid):
 	response=update_request(requestid, Type)
 	return response, 200
 
-
 @app.route('/v1/books/<string:Book_id>/recommendations', methods=['GET'])
 def get_recommended_books(Book_id):
 	response = recommend_books(Book_id)
 	return response, 200
 
-
 if __name__ == '__main__':
-        app.run(host=conf['host'],port=conf['port'])
-	#app.run(debug=True)
+    app.run(use_reloader=True, host=conf['host'],port=conf['port'])
+    #app.run(use_reloader=True, debug=True)
