@@ -5,6 +5,7 @@ from flask_swagger_ui import get_swaggerui_blueprint
 import json, os
 import pymongo
 
+
 app=Flask(__name__, static_folder="../my-library-app/build/static", template_folder="../my-library-app/build")
 
 # Supporting Cross Origin requests for all APIs
