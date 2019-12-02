@@ -1,0 +1,17 @@
+---
+
+- name: Copy SSL certificates
+  hosts: all
+  tasks:
+
+    - name: Delete existing ssl cert dir from host
+      become: yes
+      file:
+        path: /opt/ssl
+        state: absent
+
+    - name: Copy ssl folder to appropriate location
+      become: yes
+      copy:
+        src: /Users/rahuly/pythonWork/esp/ssl
+        dest: /opt

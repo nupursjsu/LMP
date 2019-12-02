@@ -1,18 +1,33 @@
 ---
 
-- name: Copy Certificates to remote (EC2) host 
+- name: Deploy NGINX Playbook
   hosts: all
   tasks:
-    - name: Copy certificate.pem to the appropriate location
+
+    - name: Installing nginx and related dependencies
+      become: yes
+      yum:
+        name: "{{ packages }}"
+      vars:
+        packages:
+          nginx
+
+    - name: Copy nginx.conf to the appropriate location
       become: yes
       copy:
-        src: /Users/rahuly/ssl/certificate.pem
-        dest: /opt/ssl/certificate.pem
+        src: /opt/esp/LMP/nginx.conf
+        dest: /etc/nginx/nginx.conf
         remote_src: yes
 
-    - name: Copy key.pem to the appropriate location
+    - name: Check if nginx is already running
       become: yes
-      copy:
-        src: /Users/rahuly/ssl/key.pem
-        dest: /opt/ssl/key.pem
-        remote_src: yes
+      shell: ps aux | grep [n]ginx | wc -l
+      register: st
+
+    - name: Testing if the server is running
+      become: yes
+      shell: if [ "{{ st.stdout_lines|first }}" == '0' ]; then nginx; else nginx -t; fi
+    
+    - name: Reload the new NGINX configuration
+      become: yes
+      shell: nginx -s reload
