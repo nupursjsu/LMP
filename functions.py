@@ -3,7 +3,7 @@ from bson.json_util import dumps
 from settings import *
 import json
 from datetime import datetime
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_file
 import pymongo
 import pandas as pd
 import numpy as np
@@ -183,7 +183,6 @@ def recommend_books(book_id):
 		for i in get:
 			output.append(i)
 	return jsonify({'result' : output})
-
 
 
 # def reduce_book(http_book_id):

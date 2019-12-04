@@ -145,6 +145,11 @@ def get_recommended_books(Book_id):
 	response = recommend_books(Book_id)
 	return response, 200
 
+@app.route('/v1/images/<string:Book_id>', methods=['GET'])
+def get_book_image(Book_id):
+	response = send_file('images/' + Book_id+'.jpg', mimetype='image/jpg') 
+	return response, 200
+
 if __name__ == '__main__':
     app.run(use_reloader=False, host=conf['host'],port=conf['port'])
     #app.run(debug=True)
