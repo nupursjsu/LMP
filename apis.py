@@ -150,6 +150,10 @@ def get_book_image(Book_id):
 	response = send_file('images/' + Book_id+'.jpg', mimetype='image/jpg') 
 	return response, 200
 
+@app.route('/v1/health', methods=['GET'])
+def health_check():
+	return 200
+
 if __name__ == '__main__':
     app.run(use_reloader=False, host=conf['host'],port=conf['port'])
     #app.run(debug=True)

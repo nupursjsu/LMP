@@ -185,6 +185,20 @@ def recommend_books(book_id):
 	return jsonify({'result' : output})
 
 
+# def check_authorization(token_id, user_id):
+# 	decoded_token = auth.verify_id_token(id_token)
+# 	uid = decoded_token['uid']
+# 	if uid == user_id:
+# 		return 200
+# 	else:
+# 		return 400
+
+
+# check_authorization()
+
+
+
+
 # def reduce_book(http_book_id):
 
 # 	bid=json.loads(http_book_id)
