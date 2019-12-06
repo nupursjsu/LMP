@@ -1,6 +1,5 @@
 from pymongo import MongoClient
 from bson.json_util import dumps
-from settings import *
 import json
 from datetime import datetime
 from flask import Flask, jsonify, request, send_file
@@ -11,16 +10,7 @@ from sklearn.neighbors import NearestNeighbors
 from scipy.sparse import csr_matrix
 import uuid
 
-# def user(user_details):
-#     conn = MongoClient(conf['mongo_url'])
-#     uname = user_details['userId']
-#     user_details['_id'] = uname
-#     db=conn.Books
-#     collection=db.myapp_user
-#     put=collection.insert_one(user_details)
-#     return json.dumps({"Success" : "User has been added"})
-
-def user(user_details):
+def user(user_details, conf):
     conn = MongoClient(conf['mongo_url'])
     uname = user_details['userId']
     user_details['_id']=uname
@@ -35,17 +25,18 @@ def user(user_details):
     	return json.dumps({"Registered" : "New user has been added"})
 
 
-def display_userdetails(user_id):
+def display_userdetails(user_id, conf):
     conn = MongoClient(conf['mongo_url'])
     db=conn.Books
     collection=db.myapp_user
     get=collection.find_one({'userId' : user_id}, {'_id' : False})
     mydict=dumps(get)
+
     conn.close()
     return mydict
 
 
-def del_user(user_id):
+def del_user(user_id, conf):
 	conn=MongoClient(conf['mongo_url'])
 	db=conn.Books
 	collection=db.myapp_user
@@ -53,7 +44,7 @@ def del_user(user_id):
 	return json.dumps({"Success" : "User has been deleted"})
 
 
-def update_userdetails(user_id, user_details):
+def update_userdetails(user_id, user_details, conf):
     conn=MongoClient(conf['mongo_url'])
     db=conn.Books
     collection=db.myapp_user
@@ -61,7 +52,7 @@ def update_userdetails(user_id, user_details):
                                  {"$set" : user_details})
     return json.dumps({"Success" : "Details updated"})
 
-def add_book(book_details):
+def del_user(user_id, conf):
 	conn=MongoClient(conf['mongo_url'])
 	book_id = book_details['bookID']
 	book_details['_id'] = book_id
@@ -71,14 +62,14 @@ def add_book(book_details):
 	return json.dumps({"Success" : "Book has been added"})
 
 
-def del_book(book_id):
+def del_book(book_id, conf):
 	conn=MongoClient(conf['mongo_url'])
 	db=conn.Books
 	coll=db.library_books_new
 	coll.delete_one({'bookID' : book_id})
 	return json.dumps({"Success" : "Book has been deleted"})
 
-def display_book(book_id):
+def display_book(book_id, conf):
 	conn=MongoClient(conf['mongo_url'])
 	db=conn.Books
 	coll=db.library_books_new
@@ -86,7 +77,7 @@ def display_book(book_id):
 	mydict=dumps(get)
 	return mydict
 
-def display_all_books(offset, limit, dict):
+def display_all_books(offset, limit, dict, conf):
 	conn=MongoClient(conf['mongo_url'])
 	db=conn.Books
 	coll=db.library_books_new
@@ -94,7 +85,7 @@ def display_all_books(offset, limit, dict):
 	mydict=dumps(get)
 	return mydict
 
-def create_request(request_json):
+def create_request(request_json, conf):
 	conn=MongoClient(conf['mongo_url'])
 	db=conn.Books
 	coll=db.Request
@@ -121,7 +112,7 @@ def create_request(request_json):
 	return response
 
 # request_id and Type mandatory
-def update_request(request_id, Type):
+def update_request(request_id, Type, conf):
 	conn=MongoClient(conf['mongo_url'])
 	db=conn.Books
 	coll=db.Request
@@ -147,7 +138,7 @@ def update_request(request_id, Type):
 
 
 
-def get_request_params(dict):
+def get_request_params(dict, conf):
 	conn=MongoClient(conf['mongo_url'])
 	db=conn.Books
 	coll=db.Request
@@ -156,7 +147,7 @@ def get_request_params(dict):
 	return mydict
 
 
-def recommend_books(book_id):
+def recommend_books(book_id, conf):
 
 	conn=MongoClient(conf['mongo_url'])
 	db=conn.Books

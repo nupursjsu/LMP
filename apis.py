@@ -1,4 +1,5 @@
 from functions import *
+from settings import conf
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 from flask_swagger_ui import get_swaggerui_blueprint
@@ -46,34 +47,34 @@ def post_user_details():
 	# call the appropriate method in functions.py
 	# If sucess -> return response with 200
 	# If exception -> return exception message as a json string ({"error_message": "There seems to be some internal issue. Please tru after some time."}) with appopriate 500 (Internal Server Error) .. Oops, something went wrong
-	response = user(inputBody) # json.dumps convert dict/json object to string AND json.loads convert a string to dict/json object
+	response = user(inputBody, conf) # json.dumps convert dict/json object to string AND json.loads convert a string to dict/json object
 	return response, 200
 
 @app.route('/v1/users/<string:user_id>', methods=['GET'])
 def get_user_details(user_id):
-	response = display_userdetails(user_id)
+	response = display_userdetails(user_id, conf)
 	return response, 200
 
 @app.route('/v1/users/<string:user_id>', methods=['DELETE'])
 def delete_user(user_id):
-	response = del_user(user_id)
+	response = del_user(user_id, conf)
 	return response, 200
 
 @app.route('/v1/users/<string:user_id>', methods=['PATCH'])
 def update_user_details(user_id):
 	inputBody = request.get_json()
-	response = update_userdetails(user_id, inputBody)
+	response = update_userdetails(user_id, inputBody, conf)
 	return response, 200
 
 @app.route('/v1/books', methods=['POST'])
 def add_book_details():
 	inputBody = request.get_json()
-	response = add_book(inputBody)
+	response = add_book(inputBody, conf)
 	return response, 200
 
 @app.route('/v1/books/<string:Book_id>', methods=['GET'])
 def get_book_deatils(Book_id):
-	response=display_book(Book_id)
+	response=display_book(Book_id, conf)
 	return response, 200
 
 
@@ -96,19 +97,19 @@ def get_books_onparams():
 	if 'authors' in request.args:
 		dict['authors'] = {"$regex" : request.args['authors'], '$options' : 'i'}
 	
-	response = display_all_books(offset, limit, dict)
+	response = display_all_books(offset, limit, dict, conf)
 	return response, 200
 
 
 @app.route('/v1/books/<string:Book_id>', methods=['DELETE'])
 def delete_book(Book_id):
-	response = del_book(Book_id)
+	response = del_book(Book_id, conf)
 	return response, 200
 
 @app.route('/v1/requests', methods=['POST'])
 def create_user_request():
 	request_json = request.get_json()
-	response = create_request(request_json)
+	response = create_request(request_json, conf)
 	return response, 200
 
 
@@ -129,7 +130,7 @@ def get_user_request():
 			dict['Status'] = {'$in' : [value[0], value[1]]}
 	if 'Type' in request.args:
 		dict['Type'] = request.args['Type']
-	response=get_request_params(dict)
+	response=get_request_params(dict, conf)
 	return response, 200
 
 
@@ -137,12 +138,12 @@ def get_user_request():
 def update_user_request(requestid):
 	body = request.get_json()
 	Type = body['Type']
-	response=update_request(requestid, Type)
+	response=update_request(requestid, Type, conf)
 	return response, 200
 
 @app.route('/v1/books/<string:Book_id>/recommendations', methods=['GET'])
 def get_recommended_books(Book_id):
-	response = recommend_books(Book_id)
+	response = recommend_books(Book_id, conf)
 	return response, 200
 
 @app.route('/v1/images/<string:Book_id>', methods=['GET'])
@@ -152,7 +153,7 @@ def get_book_image(Book_id):
 
 @app.route('/v1/health', methods=['GET'])
 def health_check():
-	return 200
+	return {}, 200
 
 if __name__ == '__main__':
     app.run(use_reloader=False, host=conf['host'],port=conf['port'])
